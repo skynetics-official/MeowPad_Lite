@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="format-detection" content="telephone=no">
+  <title>MeowPad Lite</title>
+  <style>
+    * { box-sizing:border-box; -webkit-tap-highlight-color:rgba(0,0,0,0); }
+    html,body { margin:0; padding:0; min-height:100%; background:#0f1115; color:#f4f5f7; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif; }
+    body { padding:16px 12px 34px; }
+    .app { width:100%; max-width:760px; margin:0 auto; }
+    .top { margin:8px 2px 16px; }
+    .title { font-size:29px; font-weight:800; line-height:1.1; margin:0 0 6px; }
+    .sub { color:#aeb4bf; font-size:14px; line-height:1.45; }
+    .tabs { display:table; width:100%; table-layout:fixed; border-spacing:6px 0; margin:0 -6px 15px; }
+    .tab { display:table-cell; text-align:center; padding:12px 5px; background:#1b1f27; border:1px solid #2b303a; border-radius:13px; color:#fff; font-weight:700; font-size:14px; cursor:pointer; }
+    .tab.active { background:#fff; color:#111; border-color:#fff; }
+    .panel { display:none; }
+    .panel.active { display:block; }
+    .card { background:#171a21; border:1px solid #282d36; border-radius:16px; padding:14px; margin:0 0 14px; }
+    .card h2 { font-size:20px; margin:0 0 8px; }
+    .card p { color:#aeb4bf; line-height:1.45; font-size:14px; margin:0 0 12px; }
+    .label { display:block; color:#cdd2da; font-size:13px; margin:0 0 7px; }
+    input,select { width:100%; height:46px; border:1px solid #343a46; border-radius:12px; background:#0e1116; color:#fff; padding:0 12px; font-size:16px; outline:none; }
+    select { -webkit-appearance:menulist; }
+    input:focus,select:focus { border-color:#737c8c; }
+    .row { margin-top:10px; }
+    .btn { display:block; width:100%; min-height:46px; border:0; border-radius:12px; padding:12px 13px; margin:8px 0 0; background:#f3f4f6; color:#121418; font-size:16px; font-weight:800; text-align:center; text-decoration:none; cursor:pointer; }
+    .btn.alt { background:#272d37; color:#fff; }
+    .btn.soft { background:#1d2530; color:#dce6f6; border:1px solid #334153; }
+    .btn.danger { background:#2a2020; color:#ffd7d7; border:1px solid #513030; }
+    .btnRow { display:table; width:100%; table-layout:fixed; border-spacing:6px 0; margin:8px -6px 0; }
+    .btnRow > div { display:table-cell; padding-left:6px; }
+    .btnRow .btn { margin-top:0; font-size:14px; padding-left:6px; padding-right:6px; }
+    .note,.status { margin-top:10px; padding:10px 12px; border-radius:11px; font-size:13px; line-height:1.45; }
+    .note { background:#101319; color:#9ea6b2; }
+    .status { display:none; background:#131820; color:#dbe4ef; }
+    .videoWrap { display:none; margin-top:12px; background:#000; border-radius:12px; overflow:hidden; }
+    video { display:block; width:100%; height:auto; max-height:65vh; background:#000; }
+    iframe { display:block; width:100%; border:0; background:#000; }
+    .frameCard { display:none; }
+    .frameHolder iframe { height:62vh; }
+    .animeViewer { display:none; margin-top:12px; }
+    .animeWindow { position:relative; width:100%; height:62vh; overflow:hidden; background:#000; border-radius:12px; border:1px solid #303640; }
+    .animeCanvas { position:absolute; left:0; top:0; width:100%; height:1500px; }
+    .animeCanvas iframe { position:absolute; left:0; top:0; width:100%; height:1500px; border:0; background:#fff; }
+    .shiftLabel { margin-top:8px; color:#8f97a3; font-size:12px; text-align:center; }
+    .small { font-size:12px; color:#8f97a3; line-height:1.45; }
+    .historyItem { display:block; width:100%; padding:11px 12px; margin-top:8px; border:1px solid #2d333e; border-radius:11px; background:#11151b; color:#e8ebef; text-decoration:none; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .footer { color:#737c88; font-size:12px; text-align:center; margin-top:18px; line-height:1.5; }
+    .preset { padding:12px; border-radius:12px; background:#11151b; border:1px solid #2d333e; margin-top:10px; }
+    .preset b { display:block; margin-bottom:4px; }
+    @media (min-width:600px) {
+      body { padding-top:28px; }
+      .animeWindow { height:560px; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div class="title">MeowPad Lite</div>
+    <div class="sub">Лёгкий просмотр YouTube, фильмов и аниме на старом iPad без приложения и без собственного сервера.</div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" id="tabYoutube" onclick="showPanel('youtube')">📺 YouTube</div>
+    <div class="tab" id="tabMovies" onclick="showPanel('movies')">🎬 Фильмы</div>
+    <div class="tab" id="tabAnime" onclick="showPanel('anime')">🍿 Аниме</div>
+  </div>
+
+  <div class="panel active" id="youtubePanel">
+    <div class="card">
+      <h2>YouTube Lite</h2>
+      <p>Вставь ссылку YouTube или напиши название ролика. Если один сервер не работает, переключись на следующий.</p>
+      <label class="label" for="ytInput">Ссылка или поиск</label>
+      <input id="ytInput" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="Например: minecraft funny moments">
+      <div class="row">
+        <label class="label" for="ytInstance">Сервер</label>
+        <select id="ytInstance">
+          <option value="https://inv.nadeko.net">Nadeko</option>
+          <option value="https://invidious.nerdvpn.de">NerdVPN</option>
+          <option value="https://yt.chocolatemoo53.com">ChocolateMoo</option>
+          <option value="https://invidious.tiekoetter.com">Tiekoetter</option>
+          <option value="https://invidious.f5.si">F5</option>
+        </select>
+      </div>
+      <button class="btn" onclick="openYouTubeLite()">Открыть YouTube Lite</button>
+      <button class="btn alt" onclick="nextInstance()">Другой сервер</button>
+      <button class="btn soft" onclick="openOfficialYouTube()">Обычный YouTube</button>
+      <div class="status" id="ytStatus"></div>
+    </div>
+  </div>
+
+  <div class="panel" id="moviesPanel">
+    <div class="card">
+      <h2>Фильм по ссылке</h2>
+      <p>Вставь страницу фильма, прямой плеер, MP4 или M3U8. Для известных страниц MeowPad может открыть отдельный плеер.</p>
+      <label class="label" for="movieInput">Ссылка</label>
+      <input id="movieInput" type="url" autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="https://...">
+      <button class="btn" onclick="smartMovieOpen()">Открыть автоматически</button>
+      <button class="btn alt" onclick="openMoviePage()">Открыть обычную страницу</button>
+      <button class="btn soft" onclick="tryEmbed()">Попробовать внутри MeowPad</button>
+      <div class="status" id="movieStatus"></div>
+    </div>
+
+    <div class="card">
+      <h2>Пример: 1+1</h2>
+      <p>Для присланной тобой страницы Lordfilm оставил отдельный прямой запуск плеера.</p>
+      <button class="btn" onclick="openKnownPlayer()">▶ Открыть плеер 1+1</button>
+      <button class="btn alt" onclick="embedKnownPlayer()">Плеер прямо здесь</button>
+    </div>
+
+    <div class="card">
+      <h2>Прямая ссылка на видео</h2>
+      <label class="label" for="directInput">MP4 / M3U8 / HLS</label>
+      <input id="directInput" type="url" autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="https://site/video.m3u8">
+      <button class="btn" onclick="playDirect()">▶ Запустить</button>
+      <button class="btn alt" onclick="openDirectNative()">Открыть напрямую в Safari</button>
+      <div class="videoWrap" id="directWrap"><video id="directVideo" controls playsinline webkit-playsinline preload="metadata"></video></div>
+      <div class="status" id="directStatus"></div>
+    </div>
+
+    <div class="card frameCard" id="frameCard">
+      <h2>Встроенный плеер</h2>
+      <div class="frameHolder" id="frameHolder"></div>
+      <button class="btn danger" onclick="closeFrame()">Закрыть</button>
+    </div>
+  </div>
+
+  <div class="panel" id="animePanel">
+    <div class="card">
+      <h2>Аниме с сериями</h2>
+      <p>Вставь ссылку YummyAnime. MeowPad откроет страницу внутри маленького окна и обрежет верх/низ так, чтобы оставить область с плеером. Серии выбираются прямо внутри плеера.</p>
+      <label class="label" for="animeInput">Ссылка на аниме</label>
+      <input id="animeInput" type="url" autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="https://old.yummyani.me/catalog/item/...">
+      <button class="btn" onclick="openAnimeViewer()">▶ Режим серий</button>
+      <button class="btn alt" onclick="openAnimePage()">Открыть обычную страницу</button>
+      <div class="status" id="animeStatus"></div>
+
+      <div class="animeViewer" id="animeViewer">
+        <div class="animeWindow" id="animeWindow">
+          <div class="animeCanvas" id="animeCanvas"></div>
+        </div>
+        <div class="shiftLabel" id="shiftLabel">Положение: 0 px</div>
+        <div class="btnRow">
+          <div><button class="btn alt" onclick="shiftAnime(-150)">⬆ Выше</button></div>
+          <div><button class="btn alt" onclick="shiftAnime(150)">⬇ Ниже</button></div>
+        </div>
+        <div class="btnRow">
+          <div><button class="btn soft" onclick="resetAnimeShift()">Сбросить</button></div>
+          <div><button class="btn soft" onclick="toggleAnimeCrop()">Без обрезки</button></div>
+        </div>
+        <button class="btn danger" onclick="closeAnimeViewer()">Закрыть окно</button>
+        <div class="note">Если видишь не плеер, нажимай «Ниже» или «Выше». Положение запоминается на этом iPad. Если сайт запретит встраивание, используй «Открыть обычную страницу».</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Твой пример</h2>
+      <div class="preset">
+        <b>Мифические звери 6</b>
+        <span class="small">YummyAnime · выбор серии остаётся внутри Kodik-плеера.</span>
+      </div>
+      <button class="btn" onclick="openMythicalBeasts()">▶ Открыть в режиме серий</button>
+    </div>
+
+    <div class="card">
+      <h2>Недавние ссылки</h2>
+      <div id="history"></div>
+      <button class="btn alt" onclick="clearHistory()">Очистить историю</button>
+    </div>
+  </div>
+
+  <div class="footer">MeowPad Lite v0.3 · GitHub Pages · без ПК и без собственного сервера</div>
+</div>
+
+<script>
+var animeShift = 920;
+var animeCrop = true;
+
+(function () {
+  try {
+    document.getElementById('movieInput').value = localStorage.getItem('meowpad_last_movie') || '';
+    document.getElementById('directInput').value = localStorage.getItem('meowpad_last_direct') || '';
+    document.getElementById('ytInput').value = localStorage.getItem('meowpad_last_yt') || '';
+    document.getElementById('animeInput').value = localStorage.getItem('meowpad_last_anime') || 'https://old.yummyani.me/catalog/item/mificheskie-zveri-6';
+    var savedInstance = localStorage.getItem('meowpad_yt_instance');
+    if (savedInstance) document.getElementById('ytInstance').value = savedInstance;
+    var savedShift = parseInt(localStorage.getItem('meowpad_anime_shift'),10);
+    if (!isNaN(savedShift)) animeShift = savedShift;
+  } catch (e) {}
+  renderHistory();
+})();
+
+function showPanel(name) {
+  var names = ['youtube','movies','anime'];
+  var i, n, active;
+  for (i=0;i<names.length;i++) {
+    n = names[i]; active = n === name;
+    document.getElementById(n+'Panel').className = active ? 'panel active' : 'panel';
+    document.getElementById('tab'+n.charAt(0).toUpperCase()+n.slice(1)).className = active ? 'tab active' : 'tab';
+  }
+}
+function trimText(s){ return (s||'').replace(/^\s+|\s+$/g,''); }
+function enc(s){ return encodeURIComponent(s); }
+function normalizedUrl(v){ v=trimText(v); if(!v)return ''; if(!/^https?:\/\//i.test(v))v='https://'+v; return v; }
+function showStatus(id,text){ var el=document.getElementById(id); el.style.display='block'; el.innerHTML=text; }
+function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function youtubeId(text){ var s=trimText(text); var m=s.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/))([A-Za-z0-9_-]{6,})/i); return m?m[1]:''; }
+function openYouTubeLite(){ var q=trimText(document.getElementById('ytInput').value), base=document.getElementById('ytInstance').value; if(!q){showStatus('ytStatus','Напиши запрос или вставь ссылку.');return;} try{localStorage.setItem('meowpad_last_yt',q);localStorage.setItem('meowpad_yt_instance',base);}catch(e){} var id=youtubeId(q); window.location.href=id?(base+'/watch?v='+enc(id)):(base+'/search?q='+enc(q)); }
+function nextInstance(){ var s=document.getElementById('ytInstance'); s.selectedIndex=(s.selectedIndex+1)%s.options.length; try{localStorage.setItem('meowpad_yt_instance',s.value);}catch(e){} showStatus('ytStatus','Выбран сервер: <b>'+escapeHtml(s.options[s.selectedIndex].text)+'</b>.'); }
+function openOfficialYouTube(){ var q=trimText(document.getElementById('ytInput').value), id=youtubeId(q); if(id)window.location.href='https://m.youtube.com/watch?v='+enc(id); else if(q)window.location.href='https://m.youtube.com/results?search_query='+enc(q); else window.location.href='https://m.youtube.com/'; }
+
+function rememberUrl(url,type){
+  try{
+    if(type==='anime') localStorage.setItem('meowpad_last_anime',url); else localStorage.setItem('meowpad_last_movie',url);
+    var a=JSON.parse(localStorage.getItem('meowpad_history')||'[]'), out=[url], i;
+    for(i=0;i<a.length&&out.length<10;i++) if(a[i]!==url) out.push(a[i]);
+    localStorage.setItem('meowpad_history',JSON.stringify(out));
+  }catch(e){}
+  renderHistory();
+}
+function smartMovieOpen(){ var url=normalizedUrl(document.getElementById('movieInput').value); if(!url){showStatus('movieStatus','Вставь ссылку.');return;} rememberUrl(url,'movie'); if(/neprikasaemye-lordfilm\.top/i.test(url)){window.location.href='https://api.ortified.ws/embed/movie/166?noPreview=true';return;} if(/\.(mp4|m4v|mov)(\?|#|$)/i.test(url)||/\.m3u8(\?|#|$)/i.test(url)){document.getElementById('directInput').value=url;playDirect();return;} window.location.href=url; }
+function openMoviePage(){ var url=normalizedUrl(document.getElementById('movieInput').value); if(!url){showStatus('movieStatus','Сначала вставь ссылку.');return;} rememberUrl(url,'movie'); window.location.href=url; }
+function tryEmbed(){ var url=normalizedUrl(document.getElementById('movieInput').value); if(!url){showStatus('movieStatus','Сначала вставь ссылку.');return;} rememberUrl(url,'movie'); showFrame(url); }
+function openKnownPlayer(){ window.location.href='https://api.ortified.ws/embed/movie/166?noPreview=true'; }
+function embedKnownPlayer(){ showFrame('https://api.ortified.ws/embed/movie/166?noPreview=true'); }
+function showFrame(url){ var c=document.getElementById('frameCard'), h=document.getElementById('frameHolder'); h.innerHTML='<iframe src="'+url.replace(/"/g,'&quot;')+'" allow="autoplay; fullscreen" allowfullscreen webkitallowfullscreen></iframe>'; c.style.display='block'; try{c.scrollIntoView();}catch(e){} }
+function closeFrame(){ document.getElementById('frameHolder').innerHTML=''; document.getElementById('frameCard').style.display='none'; }
+function playDirect(){ var url=normalizedUrl(document.getElementById('directInput').value); if(!url){showStatus('directStatus','Вставь прямую ссылку.');return;} try{localStorage.setItem('meowpad_last_direct',url);}catch(e){} var v=document.getElementById('directVideo'); v.pause();v.removeAttribute('src');v.load();v.src=url;document.getElementById('directWrap').style.display='block';showStatus('directStatus','Нажми ▶. Если не запускается — попробуй открыть напрямую в Safari.');v.load(); }
+function openDirectNative(){ var url=normalizedUrl(document.getElementById('directInput').value); if(!url){showStatus('directStatus','Вставь прямую ссылку.');return;} window.location.href=url; }
+
+function isYummy(url){ return /(^|\.)yummyani\.me\//i.test(url) || /old\.yummyani\.me\//i.test(url) || /ru\.yummyani\.me\//i.test(url); }
+function openAnimeViewer(){
+  var url=normalizedUrl(document.getElementById('animeInput').value);
+  if(!url){showStatus('animeStatus','Вставь ссылку на аниме.');return;}
+  rememberUrl(url,'anime');
+  if(!isYummy(url)) showStatus('animeStatus','Это не YummyAnime, но я всё равно попробую открыть страницу в режиме обрезки.');
+  else showStatus('animeStatus','Открываю. Если плеер не попал в окно — нажимай «Ниже»/«Выше».');
+  var canvas=document.getElementById('animeCanvas');
+  canvas.innerHTML='<iframe id="animeFrame" src="'+url.replace(/"/g,'&quot;')+'" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen webkitallowfullscreen></iframe>';
+  document.getElementById('animeViewer').style.display='block';
+  animeCrop=true;
+  applyAnimeShift();
+  try{document.getElementById('animeViewer').scrollIntoView();}catch(e){}
+}
+function openAnimePage(){ var url=normalizedUrl(document.getElementById('animeInput').value); if(!url){showStatus('animeStatus','Вставь ссылку.');return;} rememberUrl(url,'anime'); window.location.href=url; }
+function openMythicalBeasts(){ var url='https://old.yummyani.me/catalog/item/mificheskie-zveri-6'; document.getElementById('animeInput').value=url; showPanel('anime'); openAnimeViewer(); }
+function applyAnimeShift(){
+  var canvas=document.getElementById('animeCanvas'), frame=document.getElementById('animeFrame'), win=document.getElementById('animeWindow');
+  if(!frame)return;
+  if(animeCrop){
+    canvas.style.top=(-animeShift)+'px';
+    win.style.overflow='hidden';
+    frame.style.height='1500px';
+  } else {
+    canvas.style.top='0px';
+    win.style.overflow='auto';
+    frame.style.height='1500px';
+  }
+  document.getElementById('shiftLabel').innerHTML=animeCrop?('Положение: '+animeShift+' px'):('Обрезка выключена');
+  try{localStorage.setItem('meowpad_anime_shift',String(animeShift));}catch(e){}
+}
+function shiftAnime(delta){ animeCrop=true; animeShift+=delta; if(animeShift<0)animeShift=0; if(animeShift>2200)animeShift=2200; applyAnimeShift(); }
+function resetAnimeShift(){ animeShift=920; animeCrop=true; applyAnimeShift(); }
+function toggleAnimeCrop(){ animeCrop=!animeCrop; applyAnimeShift(); }
+function closeAnimeViewer(){ document.getElementById('animeCanvas').innerHTML=''; document.getElementById('animeViewer').style.display='none'; }
+
+function renderHistory(){
+  var box=document.getElementById('history'); if(!box)return; var a=[]; try{a=JSON.parse(localStorage.getItem('meowpad_history')||'[]');}catch(e){}
+  if(!a.length){box.innerHTML='<div class="small">Пока пусто.</div>';return;}
+  var html='',i; for(i=0;i<a.length;i++) html+='<a class="historyItem" href="#" onclick="useHistory('+i+');return false;">'+escapeHtml(a[i])+'</a>'; box.innerHTML=html;
+}
+function useHistory(i){ var a=[]; try{a=JSON.parse(localStorage.getItem('meowpad_history')||'[]');}catch(e){} if(!a[i])return; if(isYummy(a[i])){document.getElementById('animeInput').value=a[i];showPanel('anime');}else{document.getElementById('movieInput').value=a[i];showPanel('movies');} try{window.scrollTo(0,0);}catch(e){} }
+function clearHistory(){ try{localStorage.removeItem('meowpad_history');}catch(e){} renderHistory(); }
+</script>
+</body>
+</html>
